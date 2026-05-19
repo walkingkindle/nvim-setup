@@ -9,7 +9,7 @@ vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" 
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
 vim.keymap.set("n", "<leader>q", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neo-tree", noremap = true, silent = true })
 vim.keymap.set("n", "<leader>t", ":terminal", { desc = "Open Terminal", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree focus<CR>", { desc = "Focus Neo-tree" })
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree reveal<CR>", { desc = "Reveal Neo-tree" })
 vim.keymap.set(
   "n",
   "<leader>t",
@@ -18,11 +18,17 @@ vim.keymap.set(
 )
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show full error message" })
 vim.keymap.set("n", "<leader>]]", ":DotnetUI project package add", { desc = "Add package to dotnet" })
+vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "Toggle comment" })
+vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Toggle comment" })
 
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
-    cs = { "csharpier" }, -- 'cs' is the filetype for C#
+    cs = { "csharpier" },
+    typescript = { "prettier" },
+    html = { "prettier" },
+    css = { "prettier" },
+    markdown = { "prettier" },
   },
 })
 vim.keymap.set("n", "<leader>/", function()
@@ -93,10 +99,24 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
   end,
 })
 
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
 function Transparent(color)
   color = color or "tokyonight"
   vim.cmd.colorscheme(color)
-  vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-  vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+  local groups = {
+    "Normal",
+    "NormalFloat",
+    "NormalNC",
+    "SignColumn",
+    "EndOfBuffer",
+    "Terminal",
+  }
+
+  for _, group in ipairs(groups) do
+    vim.api.nvim_set_hl(0, group, { bg = "none" })
+  end
 end
 Transparent()
