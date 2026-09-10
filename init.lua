@@ -8,8 +8,7 @@ vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live gr
 vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
 vim.keymap.set("n", "<leader>q", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neo-tree", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>t", ":terminal", { desc = "Open Terminal", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree reveal<CR>", { desc = "Reveal Neo-tree" })
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree reveal<CR>", { desc = "Focus Neo-tree" })
 vim.keymap.set(
   "n",
   "<leader>t",
@@ -20,15 +19,30 @@ vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show full 
 vim.keymap.set("n", "<leader>]]", ":DotnetUI project package add", { desc = "Add package to dotnet" })
 vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "Toggle comment" })
 vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Toggle comment" })
+vim.keymap.set("n", "<leader>r", "<cmd>GrugFar<cr>", { desc = "Search and Replace" })
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true })
+
+vim.keymap.set("n", "<leader>sR", function()
+  local grug = require("grug-far")
+  local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
+  grug.open({
+    transient = true,
+    prefills = {
+      filesFilter = ext and ext ~= "" and "*." .. ext or nil,
+    },
+  })
+end, { desc = "[s]earch [R]eplace (grug-far)" })
 
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
     cs = { "csharpier" },
     typescript = { "prettier" },
+    typescriptreact = { "prettier" },
+    markdown = { "prettier" },
     html = { "prettier" },
     css = { "prettier" },
-    markdown = { "prettier" },
+    xml = { "xmlformat" },
   },
 })
 vim.keymap.set("n", "<leader>/", function()
@@ -62,7 +76,14 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
 
     local result = {}
 
-    if name_lower:find("controller") then
+    if filename:match("^I%u") then
+      table.insert(result, "namespace " .. ns .. ";")
+      table.insert(result, "")
+      table.insert(result, "public interface " .. filename)
+      table.insert(result, "{")
+      table.insert(result, "    ")
+      table.insert(result, "}")
+    elseif name_lower:find("controller") then
       table.insert(result, "using Microsoft.AspNetCore.Mvc;")
       table.insert(result, "")
       table.insert(result, "namespace " .. ns .. ";")
@@ -119,4 +140,5 @@ function Transparent(color)
     vim.api.nvim_set_hl(0, group, { bg = "none" })
   end
 end
-Transparent()
+
+-- Transparent()
