@@ -43,6 +43,7 @@ require("conform").setup({
     html = { "prettier" },
     css = { "prettier" },
     xml = { "xmlformat" },
+    go = { "gofumpt" },
   },
 })
 vim.keymap.set("n", "<leader>/", function()
